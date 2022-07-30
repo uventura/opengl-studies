@@ -1,0 +1,32 @@
+{
+    // If fail you can use "chmod +x *" on scripts folder
+
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "OpenGL Build",
+            "type": "shell",
+            "command": "source scripts/build.sh"
+        },
+        {
+            "label": "OpenGL Build & Run",
+            "type": "shell",
+            "command": "source scripts/build.sh && source scripts/run.sh"
+        },
+        {
+            "label": "OpenGL Clear",
+            "type": "shell",
+            "command": "source scripts/clear.sh"
+        },
+        {
+            "label": "OpenGL Clear & Build & Run",
+            "type": "shell",
+            "command": "source scripts/clear.sh && scripts/build.sh && source scripts/run.sh"
+        },
+        {
+            "label": "OpenGL Run",
+            "type": "shell",
+            "command": "source scripts/run.sh"
+        },
+    ]
+}
