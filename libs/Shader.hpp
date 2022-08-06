@@ -17,4 +17,6 @@ class Shader
     public:
         Shader(std::string vertex_shader_src, std::string fragment_shader_src);
         void use();
+
+        inline uint id(){return shader_program;};
 };

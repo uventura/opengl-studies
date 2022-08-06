@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 #include "Shader.hpp"
 
@@ -101,7 +102,15 @@ int main( void )
         glBindVertexArray(VAO);
         glEnableVertexAttribArray(0);
 
+        //======== Using Uniforms ========
+        float current_time = glfwGetTime();
+        float red_value = (sin(current_time) / 2.0f) + 0.5f;
+        float blue_value = (cos(current_time) / 2.0f) + 0.5f;
+
+        int vertex_color_location = glGetUniformLocation(shader.id(), "our_color");
         shader.use();
+        glUniform4f(vertex_color_location, red_value, 0.0f, blue_value, 1.0f);
+
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
 
         glBindVertexArray(0);
