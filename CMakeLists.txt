@@ -18,6 +18,11 @@ add_subdirectory(deps/glfw)
 target_link_libraries(${PROJECT_NAME} glfw)
 target_include_directories(${PROJECT_NAME} PUBLIC deps/glfw/include deps/glfw/deps)
 
+# IMGUI
+add_subdirectory(deps/imgui)
+target_link_libraries(${PROJECT_NAME} imgui)
+target_include_directories(${PROJECT_NAME} PUBLIC deps/imgui deps/imgui/backends)
+
 #====================================
 #           Libraries
 #====================================
