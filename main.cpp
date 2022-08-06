@@ -85,13 +85,27 @@ int main( void )
     float vertices[] = {
         -0.5f, -0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f,
+         0.5f,  0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f,
+    };
+
+    // Indices
+    uint indices[] = {
+        0, 1, 2,    // First Triangle
+        2, 3, 0     // Second Triangle
     };
 
     // Generating a VAO
     uint VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
+
+    // Element Buffer Object
+    uint EBO;
+    glGenBuffers(1, &EBO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     uint VBO; // Vertex Buffer Object
     glGenBuffers(1, &VBO);
@@ -146,7 +160,9 @@ int main( void )
         // Activating the Shader
         glUseProgram(shader_program);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
 
         /* Swap buffers */
         glfwSwapBuffers(window);
