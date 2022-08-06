@@ -156,6 +156,7 @@ int main( void )
         glClearColor(0.03f,0.0f,0.1f,0.03f);
 
         //========= Rendering =============
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         // Activating the Shader
         glUseProgram(shader_program);
