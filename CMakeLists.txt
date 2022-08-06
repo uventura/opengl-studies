@@ -18,3 +18,11 @@ add_subdirectory(deps/glfw)
 target_link_libraries(${PROJECT_NAME} glfw)
 target_include_directories(${PROJECT_NAME} PUBLIC deps/glfw/include deps/glfw/deps)
 
+#====================================
+#           Libraries
+#====================================
+
+# MainLibrary
+add_subdirectory(libs)
+target_link_libraries(${PROJECT_NAME} mainlib)
+target_include_directories(${PROJECT_NAME} PUBLIC libs)
