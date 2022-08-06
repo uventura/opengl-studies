@@ -56,22 +56,15 @@ int main( void )
     float vertices[] = {
         // First Square
         -0.5f, -0.5f, 0.0f, // 0
-         0.0f, -0.5f, 0.0f, // 1
-         0.0f,  0.0f, 0.0f, // 2
-        -0.5f,  0.0f, 0.0f, // 3
-        // Second Square
-         0.0f,  0.0f, 0.0f, // 4
-         0.5f,  0.0f, 0.0f, // 5
-         0.5f,  0.5f, 0.0f, // 6
-         0.0f,  0.5f, 0.0f, // 7
+         0.5f, -0.5f, 0.0f, // 1
+         0.5f,  0.5f, 0.0f, // 2
+        -0.5f,  0.5f, 0.0f, // 3
     };
 
     // Indices
     uint indices[] = {
         0, 1, 2,
         2, 3, 0,
-        4, 5, 6,
-        6, 7, 4,
     };
 
     // Generating a VAO
@@ -86,16 +79,15 @@ int main( void )
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    uint VBO_A; // Vertex Buffer Object
-    glGenBuffers(1, &VBO_A);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_A);
+    uint VBO; // Vertex Buffer Object
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
     // ============= SHADERS ===================
-    Shader shader01("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
-    Shader shader02("shaders/vertex_shader.glsl", "shaders/fragment_shader02.glsl");
+    Shader shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
 
     // Execution
     while(!glfwWindowShouldClose(window))
@@ -107,14 +99,10 @@ int main( void )
         //========= Rendering =============
 
         glBindVertexArray(VAO);
-        //glDisableVertexAttribArray(0);
         glEnableVertexAttribArray(0);
 
-        shader01.use();
+        shader.use();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
-
-        shader02.use();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(sizeof(uint)*6));
 
         glBindVertexArray(0);
 
