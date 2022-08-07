@@ -9,53 +9,13 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "Window.hpp"
 #include "Shader.hpp"
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-
-void input_process(GLFWwindow* window)
-{
-    // Close Window Key
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, true);
-    }
-}
 
 int main( void )
 {
-    GLFWwindow* window;
-
-    /* Init GLFW */
-    if(!glfwInit())
-        return -1;
-
-    const uint width = 640;
-    const uint height = 480;
-
-    window = glfwCreateWindow(width, height, "OpenGL Studies", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
-
-    // Loading Context
-    glfwMakeContextCurrent(window);
-    if(!gladLoadGL(glfwGetProcAddress))
-    {
-        std::cout << "[ERROR] Failed to load GLAD\n";
-        return -1;
-    }
-
-    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << "\n";
-    std::cout << "Shader Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
-
-    // Viewport Settings
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    Window window(640, 480, "OpenGL Studies");
+    window.use();
 
     // Data
     float vertices[] = {
@@ -106,17 +66,15 @@ int main( void )
     ImGui::StyleColorsDark();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window.getWindow(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
     bool show_demo_window = true;
 
     // Execution
-    while(!glfwWindowShouldClose(window))
+    while(!window.shouldClose())
     {
-        // Clear Screen
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(0.03f,0.0f,0.1f,0.03f);
+        window.clear();
 
         //========= DEAR IMGUI =============
 
@@ -153,14 +111,7 @@ int main( void )
         // Render Imgui
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        /* Swap buffers */
-        glfwSwapBuffers(window);
-
-        // Get Input Events
-        glfwPollEvents();
-
-        // Input Analysis
-        input_process(window);
+        window.update();
     }
 
     // Cleanup
@@ -168,6 +119,6 @@ int main( void )
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwTerminate();
+    window.close();
     return 0;
 }
