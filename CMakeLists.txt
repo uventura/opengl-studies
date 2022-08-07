@@ -28,6 +28,11 @@ add_subdirectory(deps/stb_image)
 target_link_libraries(${PROJECT_NAME} stb_image)
 target_include_directories(${PROJECT_NAME} PUBLIC deps/stb_image)
 
+# GLM
+add_subdirectory(deps/glm)
+target_link_libraries(${PROJECT_NAME} glm)
+target_include_directories(${PROJECT_NAME} PUBLIC deps/glm)
+
 #====================================
 #           Libraries
 #====================================
