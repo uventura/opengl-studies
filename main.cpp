@@ -19,11 +19,9 @@ int main( void )
 
     // Data
     float vertices[] = {
-        // First Square
-        -0.5f, -0.5f, 0.0f, // 0
-         0.5f, -0.5f, 0.0f, // 1
-         0.5f,  0.5f, 0.0f, // 2
-        -0.5f,  0.5f, 0.0f, // 3
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.1f, 0.2f, // 0
+         0.5f, -0.5f, 0.0f, 0.3f, 1.0f, 0.2f, // 1
+         0.0f,  0.5f, 0.0f, 0.3f, 0.1f, 1.0f, // 2
     };
 
     // Indices
@@ -49,7 +47,11 @@ int main( void )
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // ============= SHADERS ===================
     Shader shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
@@ -93,18 +95,8 @@ int main( void )
         //========= Rendering =============
 
         glBindVertexArray(VAO);
-        glEnableVertexAttribArray(0);
-
-        //======== Using Uniforms ========
-        float current_time = glfwGetTime();
-        float red_value = (sin(current_time) / 2.0f) + 0.5f;
-        float blue_value = (cos(current_time) / 2.0f) + 0.5f;
-
-        int vertex_color_location = glGetUniformLocation(shader.id(), "our_color");
         shader.use();
-        glUniform4f(vertex_color_location, red_value, 0.0f, blue_value, 1.0f);
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)0);
 
         glBindVertexArray(0);
 
