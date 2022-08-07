@@ -23,6 +23,11 @@ add_subdirectory(deps/imgui)
 target_link_libraries(${PROJECT_NAME} imgui)
 target_include_directories(${PROJECT_NAME} PUBLIC deps/imgui deps/imgui/backends)
 
+# STB IMAGE
+add_subdirectory(deps/stb_image)
+target_link_libraries(${PROJECT_NAME} stb_image)
+target_include_directories(${PROJECT_NAME} PUBLIC deps/stb_image)
+
 #====================================
 #           Libraries
 #====================================

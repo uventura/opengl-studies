@@ -9,6 +9,9 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include "Window.hpp"
 #include "Shader.hpp"
 
@@ -19,9 +22,10 @@ int main( void )
 
     // Data
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.1f, 0.2f, // 0
-         0.5f, -0.5f, 0.0f, 0.3f, 1.0f, 0.2f, // 1
-         0.0f,  0.5f, 0.0f, 0.3f, 0.1f, 1.0f, // 2
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.1f, 0.2f, 0.0f, 0.0f, // 0
+         0.5f, -0.5f, 0.0f, 0.3f, 1.0f, 0.2f, 1.0f, 0.0f, // 1
+         0.5f,  0.5f, 0.0f, 0.3f, 0.1f, 1.0f, 1.0f, 1.0f, // 2
+        -0.5f,  0.5f, 0.0f, 0.2f, 1.0f, 0.3f, 0.0f, 1.0f, // 3
     };
 
     // Indices
@@ -47,11 +51,14 @@ int main( void )
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // ============= SHADERS ===================
     Shader shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
@@ -73,6 +80,34 @@ int main( void )
 
     float move = 0.0f;
 
+    //============ TEXTURES ============
+    uint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
+
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    float tex_coords[] = {
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        0.5f, 1.0f
+    };
+
+    int tex_width, tex_height, tex_channels;
+    unsigned char* tex_data = stbi_load("textures/texture01.jpg", &tex_width, &tex_height, &tex_channels, 0);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex_data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(tex_data);
+
     // Execution
     while(!window.shouldClose())
     {
@@ -91,13 +126,14 @@ int main( void )
 
         //========= Rendering =============
 
+        glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
 
         int vertex_location = glGetUniformLocation(shader.id(), "deltaPos");
         glUniform3f(vertex_location, move, move, move);
         shader.use();
 
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
 
         glBindVertexArray(0);
 
