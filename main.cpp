@@ -112,6 +112,14 @@ int main( void )
 
     stbi_image_free(tex_data);
 
+    // ====== GLM EXAMPLE =========
+    float rotation = 0.0f;
+    float scale = 1.0f;
+    float previous_rot = rotation;
+    float previous_sca = scale;
+
+    glm::mat4 transf = glm::mat4(1.0f);
+
     // Execution
     while(!window.shouldClose())
     {
@@ -125,16 +133,35 @@ int main( void )
         ImGui::NewFrame();
 
         ImGui::SliderFloat("Move Triangle", &move, -1.0f, 1.0f);
+        ImGui::SliderFloat("Rotation", &rotation, 0.0f, 360.0f);
+        ImGui::SliderFloat("Scale", &scale, 0.0f, 1.0f);
 
         ImGui::Render();
+
+        // Transform Action
+        transf = glm::rotate(transf, glm::radians(rotation-previous_rot), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        if(scale > previous_sca)
+            transf = glm::scale(transf, glm::vec3(scale+previous_sca, scale+previous_sca, scale+previous_sca));
+        else if(scale < previous_sca)
+            transf = glm::scale(transf, glm::vec3(scale, scale, scale));
+        else
+            transf = glm::scale(transf, glm::vec3(1.0f, 1.0f, 1.0f));
+
+        previous_rot = rotation;
+        previous_sca = scale;
 
         //========= Rendering =============
 
         glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
 
+        // Uniform
         int vertex_location = glGetUniformLocation(shader.id(), "deltaPos");
+        int trans = glGetUniformLocation(shader.id(), "transform");
+
         glUniform3f(vertex_location, move, move, move);
+        glUniformMatrix4fv(trans, 1, GL_FALSE, glm::value_ptr(transf));
         shader.use();
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
@@ -153,5 +180,6 @@ int main( void )
     ImGui::DestroyContext();
 
     window.close();
-    return 0;
+    // return 0;
+
 }
