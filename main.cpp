@@ -71,7 +71,7 @@ int main( void )
     ImGui_ImplGlfw_InitForOpenGL(window.getWindow(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    bool show_demo_window = true;
+    float move = 0.0f;
 
     // Execution
     while(!window.shouldClose())
@@ -85,17 +85,18 @@ int main( void )
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+        ImGui::SliderFloat("Move Triangle", &move, -1.0f, 1.0f);
 
-        // Rendering
         ImGui::Render();
 
         //========= Rendering =============
 
         glBindVertexArray(VAO);
+
+        int vertex_location = glGetUniformLocation(shader.id(), "deltaPos");
+        glUniform3f(vertex_location, move, move, move);
         shader.use();
+
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)0);
 
         glBindVertexArray(0);

@@ -5,8 +5,13 @@ layout (location = 1) in vec3 acolor;
 
 out vec3 ourColor;
 
+uniform vec3 deltaPos;
+vec3 positions;
+
 void main()
 {
-    gl_Position = vec4(apos, 1.0);
-    ourColor = acolor;
+    positions = vec3(apos.x + deltaPos.x, apos.y, apos.z);
+    gl_Position = vec4(positions, 1.0);
+
+    ourColor = acolor + deltaPos;
 }
