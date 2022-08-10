@@ -12,10 +12,14 @@ vec3 positions;
 
 uniform mat4 transform;
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
 void main()
 {
     positions = vec3(apos.x + deltaPos.x, apos.y, apos.z);
-    gl_Position = transform * vec4(positions, 1.0);
+    gl_Position = projection * view * model * vec4(positions, 1.0);
 
     ourColor = acolor + deltaPos;
     tex_color = atex;

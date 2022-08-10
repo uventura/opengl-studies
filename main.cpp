@@ -26,16 +26,31 @@ int main( void )
 
     // Data
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.1f, 0.2f, 0.0f, 0.0f, // 0
-         0.5f, -0.5f, 0.0f, 0.3f, 1.0f, 0.2f, 1.0f, 0.0f, // 1
-         0.5f,  0.5f, 0.0f, 0.3f, 0.1f, 1.0f, 1.0f, 1.0f, // 2
-        -0.5f,  0.5f, 0.0f, 0.2f, 1.0f, 0.3f, 0.0f, 1.0f, // 3
+        -0.5f, -0.5f, 0.5f, 1.0f, 0.1f, 0.2f, 0.0f, 0.0f, // 0
+         0.5f, -0.5f, 0.5f, 0.3f, 1.0f, 0.2f, 1.0f, 0.0f, // 1
+         0.5f,  0.5f, 0.5f, 0.3f, 0.1f, 1.0f, 1.0f, 1.0f, // 2
+        -0.5f,  0.5f, 0.5f, 0.2f, 1.0f, 0.3f, 0.0f, 1.0f, // 3
+
+        -0.5f, -0.5f,-0.5f, 1.0f, 0.1f, 0.2f, 0.0f, 0.0f, // 0
+         0.5f, -0.5f,-0.5f, 0.3f, 1.0f, 0.2f, 1.0f, 0.0f, // 1
+         0.5f,  0.5f,-0.5f, 0.3f, 0.1f, 1.0f, 1.0f, 1.0f, // 2
+        -0.5f,  0.5f,-0.5f, 0.2f, 1.0f, 0.3f, 0.0f, 1.0f, // 3
     };
 
     // Indices
     uint indices[] = {
         0, 1, 2,
         2, 3, 0,
+        0, 3, 4,
+        3, 4, 7,
+        4, 5, 7,
+        5, 6, 7,
+        1, 2, 5,
+        2, 5, 6,
+        3, 2, 7,
+        2, 6, 7,
+        0, 1, 5,
+        0, 4, 5,
     };
 
     // Generating a VAO
@@ -105,7 +120,7 @@ int main( void )
     };
 
     int tex_width, tex_height, tex_channels;
-    unsigned char* tex_data = stbi_load("textures/texture01.jpg", &tex_width, &tex_height, &tex_channels, 0);
+    unsigned char* tex_data = stbi_load("textures/texture02.jpg", &tex_width, &tex_height, &tex_channels, 0);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex_data);
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -119,6 +134,16 @@ int main( void )
     float previous_sca = scale;
 
     glm::mat4 transf = glm::mat4(1.0f);
+
+    // Coordinate System
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 640.0f/480.0f, 0.1f, 100.0f);
 
     // Execution
     while(!window.shouldClose())
@@ -164,7 +189,15 @@ int main( void )
         glUniformMatrix4fv(trans, 1, GL_FALSE, glm::value_ptr(transf));
         shader.use();
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+        int model_location = glGetUniformLocation(shader.id(), "model");
+        int view_location = glGetUniformLocation(shader.id(), "view");
+        int projection_location = glGetUniformLocation(shader.id(), "projection");
+
+        glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projection_location, 1, GL_FALSE, glm::value_ptr(projection));
+
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 
         glBindVertexArray(0);
 

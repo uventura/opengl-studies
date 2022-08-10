@@ -16,6 +16,7 @@ Window::Window(const uint width, const uint height, std::string title)
         glfwTerminate();
         return;
     }
+
 }
 
 void Window::frameBufferCallback(GLFWwindow* window, int width, int height)
@@ -47,6 +48,8 @@ void Window::use()
 
     // Viewport Settings
     glfwSetFramebufferSizeCallback(window, Window::frameBufferCallback);
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 bool Window::shouldClose()
@@ -57,7 +60,7 @@ bool Window::shouldClose()
 void Window::clear()
 {
     // Clear Screen
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.03f,0.0f,0.1f,0.03f);
 }
 
