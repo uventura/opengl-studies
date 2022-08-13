@@ -26,31 +26,47 @@ int main( void )
 
     // Data
     float vertices[] = {
-        -0.5f, -0.5f, 0.5f, 1.0f, 0.1f, 0.2f, 0.0f, 0.0f, // 0
-         0.5f, -0.5f, 0.5f, 0.3f, 1.0f, 0.2f, 1.0f, 0.0f, // 1
-         0.5f,  0.5f, 0.5f, 0.3f, 0.1f, 1.0f, 1.0f, 1.0f, // 2
-        -0.5f,  0.5f, 0.5f, 0.2f, 1.0f, 0.3f, 0.0f, 1.0f, // 3
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-        -0.5f, -0.5f,-0.5f, 1.0f, 0.1f, 0.2f, 0.0f, 0.0f, // 0
-         0.5f, -0.5f,-0.5f, 0.3f, 1.0f, 0.2f, 1.0f, 0.0f, // 1
-         0.5f,  0.5f,-0.5f, 0.3f, 0.1f, 1.0f, 1.0f, 1.0f, // 2
-        -0.5f,  0.5f,-0.5f, 0.2f, 1.0f, 0.3f, 0.0f, 1.0f, // 3
-    };
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-    // Indices
-    uint indices[] = {
-        0, 1, 2,
-        2, 3, 0,
-        0, 3, 4,
-        3, 4, 7,
-        4, 5, 7,
-        5, 6, 7,
-        1, 2, 5,
-        2, 5, 6,
-        3, 2, 7,
-        2, 6, 7,
-        0, 1, 5,
-        0, 4, 5,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
     // Generating a VAO
@@ -58,26 +74,16 @@ int main( void )
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
-    // Element Buffer Object
-    uint EBO;
-    glGenBuffers(1, &EBO);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
     uint VBO; // Vertex Buffer Object
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
 
     // ============= SHADERS ===================
     Shader shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
@@ -96,8 +102,6 @@ int main( void )
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window.getWindow(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
-
-    float move = 0.0f;
 
     //============ TEXTURES ============
     uint texture;
@@ -128,22 +132,27 @@ int main( void )
     stbi_image_free(tex_data);
 
     // ====== GLM EXAMPLE =========
-    float rotation = 0.0f;
-    float scale = 1.0f;
-    float previous_rot = rotation;
-    float previous_sca = scale;
-
-    glm::mat4 transf = glm::mat4(1.0f);
+    float rotation[3] = {-55.0f, 0.0f, 0.0f};
 
     // Coordinate System
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
     glm::mat4 view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 640.0f/480.0f, 0.1f, 100.0f);
+
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f, 0.0f, 0.0f),
+        glm::vec3( 2.0f, 5.0f, -1.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -5.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f, 3.0f, -2.5f),
+        glm::vec3( 1.3f, -2.0f, -0.5f),
+        glm::vec3( 1.5f, 2.0f, -1.5f),
+        glm::vec3( 1.5f, 0.2f, -1.5f),
+        glm::vec3(-1.3f, 1.0f, -1.5f)
+    };
 
     // Execution
     while(!window.shouldClose())
@@ -157,47 +166,42 @@ int main( void )
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::SliderFloat("Move Triangle", &move, -1.0f, 1.0f);
-        ImGui::SliderFloat("Rotation", &rotation, 0.0f, 360.0f);
-        ImGui::SliderFloat("Scale", &scale, 0.0f, 1.0f);
+        ImGui::SliderFloat("Rotation X", &rotation[0], -360.0f, 360.0f);
+        ImGui::SliderFloat("Rotation Y", &rotation[1], -360.0f, 360.0f);
+        ImGui::SliderFloat("Rotation Z", &rotation[2], -360.0f, 360.0f);
 
         ImGui::Render();
 
         // Transform Action
-        transf = glm::rotate(transf, glm::radians(rotation-previous_rot), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        if(scale > previous_sca)
-            transf = glm::scale(transf, glm::vec3(scale+previous_sca, scale+previous_sca, scale+previous_sca));
-        else if(scale < previous_sca)
-            transf = glm::scale(transf, glm::vec3(scale, scale, scale));
-        else
-            transf = glm::scale(transf, glm::vec3(1.0f, 1.0f, 1.0f));
-
-        previous_rot = rotation;
-        previous_sca = scale;
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(rotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(rotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(rotation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
 
         //========= Rendering =============
-
         glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
 
-        // Uniform
-        int vertex_location = glGetUniformLocation(shader.id(), "deltaPos");
-        int trans = glGetUniformLocation(shader.id(), "transform");
+        for(uint i=0; i<10; ++i)
+        {
+            // Uniform
+            shader.use();
 
-        glUniform3f(vertex_location, move, move, move);
-        glUniformMatrix4fv(trans, 1, GL_FALSE, glm::value_ptr(transf));
-        shader.use();
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f - i;
 
-        int model_location = glGetUniformLocation(shader.id(), "model");
-        int view_location = glGetUniformLocation(shader.id(), "view");
-        int projection_location = glGetUniformLocation(shader.id(), "projection");
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
-        glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projection_location, 1, GL_FALSE, glm::value_ptr(projection));
+            int model_location = glGetUniformLocation(shader.id(), "model");
+            int view_location = glGetUniformLocation(shader.id(), "view");
+            int projection_location = glGetUniformLocation(shader.id(), "projection");
 
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+            glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(view));
+            glUniformMatrix4fv(projection_location, 1, GL_FALSE, glm::value_ptr(projection));
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         glBindVertexArray(0);
 
