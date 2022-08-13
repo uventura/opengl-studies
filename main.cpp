@@ -19,6 +19,80 @@
 #include "Window.hpp"
 #include "Shader.hpp"
 
+// Camera Definitions
+glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+// Time
+float delta_time = 0.0f;
+float last_time = 0.0f;
+
+// Mouse
+float last_x = 400, last_y = 300;
+bool first_mouse = true;
+float yaw = 0.0f, pitch = 0.0f;
+float fov = 45.0f;
+
+// Functions
+
+void processInput(GLFWwindow* window)
+{
+    const float camera_speed = 4.5f * delta_time;
+
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera_pos += camera_speed * camera_front;
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera_pos -= camera_speed * camera_front;
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera_pos -= glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+}
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    if(first_mouse)
+    {
+        last_x = xpos;
+        last_y = ypos;
+        first_mouse = false;
+    }
+
+    float xoffset = xpos - last_x;
+    float yoffest = last_y - ypos;
+
+    last_x = xpos;
+    last_y = ypos;
+
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffest *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffest;
+
+    if(pitch > 89.0f)
+        pitch = 89.0f;
+    if(pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    camera_front = glm::normalize(direction);
+}
+
+void zoomCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    fov -= (float)yoffset;
+    if(fov < 1.0f)
+        fov = 1.0f;
+    if(fov > 45.0f)
+        fov = 45.0f;
+}
+
 int main( void )
 {
     Window window(640, 480, "OpenGL Studies");
@@ -100,7 +174,7 @@ int main( void )
     ImGui::StyleColorsDark();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window.getWindow(), true);
+    ImGui_ImplGlfw_InitForOpenGL(window.id(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
     //============ TEXTURES ============
@@ -136,10 +210,7 @@ int main( void )
 
     // Coordinate System
     glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), 640.0f/480.0f, 0.1f, 100.0f);
+    // view = glm::translate(view, glm::vec3(1.0f, 0.0f, -3.0f));
 
     glm::vec3 cubePositions[] = {
         glm::vec3( 0.0f, 0.0f, 0.0f),
@@ -154,10 +225,36 @@ int main( void )
         glm::vec3(-1.3f, 1.0f, -1.5f)
     };
 
+    // // Camera
+    // glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
+    // glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
+    // glm::vec3 camera_direction = glm::normalize(camera_pos - camera_target);
+    // glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    // glm::vec3 camera_right = glm::normalize(glm::cross(up, camera_direction));
+    // glm::vec3 camera_up = glm::cross(camera_direction, camera_right);
+
+    // Euler Angles
+    // glm::vec3 direction;
+    
+    // float yaw;
+    // float pitch;
+
+    // // Yaw
+    // direction.x = cos(glm::radians(yaw));
+    // direction.z = sin(glm::radians(yaw));
+    // direction.y = sin(glm::radians(pitch));
+
+    // // Pitch
+
+
     // Execution
     while(!window.shouldClose())
     {
         window.clear();
+
+        float current_frame = glfwGetTime();
+        delta_time = current_frame - last_time;
+        last_time = current_frame;
 
         //========= DEAR IMGUI =============
 
@@ -173,6 +270,9 @@ int main( void )
         ImGui::Render();
 
         // Transform Action
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(fov), 640.0f/480.0f, 0.1f, 100.0f);
+
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians(rotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::rotate(model, glm::radians(rotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -181,6 +281,21 @@ int main( void )
         //========= Rendering =============
         glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
+
+        // const float radius = 10.0f;
+        // float cam_x = sin(glfwGetTime()) * radius;
+        // float cam_z = cos(glfwGetTime()) * radius;
+
+        // view = glm::lookAt(
+        //     glm::vec3(cam_x, 0.0f, cam_z),
+        //     glm::vec3(0.0f, 0.0f, 0.0f),
+        //     glm::vec3(0.0f, 1.0f, 0.0f)
+        // );
+        view = glm::lookAt(
+            camera_pos,
+            camera_pos + camera_front,
+            camera_up
+        );
 
         for(uint i=0; i<10; ++i)
         {
@@ -192,13 +307,9 @@ int main( void )
 
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
-            int model_location = glGetUniformLocation(shader.id(), "model");
-            int view_location = glGetUniformLocation(shader.id(), "view");
-            int projection_location = glGetUniformLocation(shader.id(), "projection");
-
-            glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(model));
-            glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(view));
-            glUniformMatrix4fv(projection_location, 1, GL_FALSE, glm::value_ptr(projection));
+            shader.setUniformMatrix4fv("model", glm::value_ptr(model));
+            shader.setUniformMatrix4fv("view", glm::value_ptr(view));
+            shader.setUniformMatrix4fv("projection", glm::value_ptr(projection));
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
@@ -209,6 +320,10 @@ int main( void )
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         window.update();
+        processInput(window.id());
+
+        glfwSetCursorPosCallback(window.id(), mouseCallback);
+        glfwSetScrollCallback(window.id(), zoomCallback);
     }
 
     // Cleanup

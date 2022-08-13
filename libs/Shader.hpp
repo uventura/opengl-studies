@@ -14,9 +14,13 @@ class Shader
         void shaderCheck(uint shader_id);
         void shaderProgramCheck(uint shader_program_id);
 
+        int getUniform(std::string uniform);
+
     public:
         Shader(std::string vertex_shader_src, std::string fragment_shader_src);
         void use();
 
         inline uint id(){return shader_program;};
+
+        void setUniformMatrix4fv(std::string uniform, const float* matrix);
 };

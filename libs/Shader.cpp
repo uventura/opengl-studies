@@ -83,3 +83,14 @@ void Shader::shaderProgramCheck(uint shader_program_id)
         std::cout << "[SHADER PROGRAM ERROR] " << info_log << "\n";
     }
 }
+
+int Shader::getUniform(std::string uniform)
+{
+    return glGetUniformLocation(id(), uniform.c_str());
+}
+
+void Shader::setUniformMatrix4fv(std::string uniform, const float* matrix)
+{
+    int uniform_id = getUniform(uniform);
+    glUniformMatrix4fv(uniform_id, 1, GL_FALSE, matrix);
+}

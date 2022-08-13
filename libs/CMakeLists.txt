@@ -9,3 +9,4 @@ add_library(mainlib ${LIB_HEADERS} ${LIB_SOURCES})
 
 target_link_libraries(mainlib glad)
 target_link_libraries(mainlib glfw)
+target_link_libraries(mainlib glm)

@@ -48,6 +48,7 @@ void Window::use()
 
     // Viewport Settings
     glfwSetFramebufferSizeCallback(window, Window::frameBufferCallback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glEnable(GL_DEPTH_TEST);
 }
